@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>OTP Login</title>
+        <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, orange, white, green); /* Indian Flag Gradient */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      width: 300px;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #cc5500;
+    }
+    #otpBox {
+      display: none;
+    }
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <h2>Login with OTP</h2>
+            <form id="loginForm">
+                <input
+                    type="text"
+                    id="mobile"
+                    name="mobile"
+                    placeholder="Enter Mobile Number"
+                    required
+                >
+                <button type="button" onclick="sendOTP()">Send OTP</button>
+                <div id="otpBox">
+                    <input
+                        type="text"
+                        id="otp"
+                        name="otp"
+                        placeholder="Enter OTP"
+                    >
+                    <button type="button" onclick="verifyOTP()">Verify OTP</button>
+                </div>
+            </form>
+            <p id="msg"></p>
+        </div>
+        <script>
+    function sendOTP() {
+      let mobile = document.getElementById("mobile").value;
+      fetch("/send_otp", {
+        method: "POST",
+        body: new URLSearchParams({ "mobile": mobile }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "sent") {
+          document.getElementById("msg").innerText = "OTP Sent! Check your mobile.";
+          document.getElementById("otpBox").style.display = "block"; // show OTP box
+        }
+      });
+    }
+
+    function verifyOTP() {
+      let otp = document.getElementById("otp").value;
+      fetch("/verify_otp", {
+        method: "POST",
+        body: new URLSearchParams({ "otp": otp }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          document.getElementById("msg").innerText = "✅ Login Successful!";
+        } else {
+          document.getElementById("msg").innerText = "❌ Wrong OTP!";
+        }
+      });
+    }
+        </script>
+    </body>
+</html>
